@@ -2329,7 +2329,7 @@ window.lyfeApi=function(path,d){
 #info_custom .cm-upload:disabled{opacity:.45;cursor:default;background:#fff}
 @media(max-width:900px){
  #info_custom .cm-left{order:1;position:static;background:#fff}
- #info_custom .cm-left .cm-stage{position:relative;top:auto;height:44vh;min-height:280px}
+ #info_custom .cm-left .cm-stage{position:relative;top:auto;height:auto;min-height:0;aspect-ratio:1/1.1}
  #info_custom .cm-tray{margin-top:10px}
 }
 #info_custom .cm-radar .pr{position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:currentColor;opacity:0;animation:cmPing 1.6s ease-out infinite}
@@ -2379,6 +2379,11 @@ html body #info_custom .cm-step input{appearance:none;width:58px;height:38px;bor
 #info_custom .cm-zones i.zd{width:16px;height:16px;margin:-8px 0 0 -8px;opacity:1;background:var(--rc)}
 #info_custom .cm-zones i.zd:after{content:"";position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;background:var(--rc);opacity:0;animation:cmPing 1.6s ease-out infinite}
 @media (hover:none){#info_custom .cm-zones{display:block;position:absolute;left:0;top:0;right:0;bottom:0;pointer-events:none}}
+
+#info_custom .cm-cl{max-height:250px}
+#info_custom .cm-sw{width:20px;height:20px;border-radius:50%;background:var(--c);border:1.5px solid rgba(0,0,0,.28);flex:none;box-sizing:border-box}
+#info_custom .cm-fo.on .cm-sw{border-color:rgba(255,255,255,.7)}
+#info_custom .cm-sw.auto{background:conic-gradient(#000 0 50%,#fff 50% 100%)}
 </style>
 <section class="info-page" id="info_custom" aria-label="Custom merch">
   <div class="cm-wrap">
@@ -2433,8 +2438,7 @@ html body #info_custom .cm-step input{appearance:none;width:58px;height:38px;bor
           <form class="cm-fs" role="search" onsubmit="return false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.8"/><path d="M15.6 15.6L21 21"/></svg><input id="cmFontSearch" type="search" placeholder="Search" aria-label="Search fonts" autocomplete="off" spellcheck="false"></form>
           <div class="cm-fl" id="cmFontList" role="listbox" aria-label="Fonts"></div>
           <div class="cm-lab cm-flab">TEXT COLOR <b id="cmTxColName">AUTO</b></div>
-          <div class="cm-colors cm-txcols" id="cmTxCols"></div>
-          <div class="cm-lenrow"><div class="cm-lab">LENGTH</div><div class="cm-step"><button type="button" id="cmLenM" aria-label="Shorter">&minus;</button><input id="cmLen" type="text" inputmode="numeric" value="100" aria-label="Text length percent" autocomplete="off"><b>%</b><button type="button" id="cmLenP" aria-label="Longer">+</button></div></div>
+          <div class="cm-fl cm-cl" id="cmTxCols" role="listbox" aria-label="Text color"></div>
           <input type="file" id="cmFontFile" accept=".ttf,.otf,.woff,.woff2,font/ttf,font/otf,font/woff,font/woff2" multiple hidden>
           <button type="button" class="cm-upload" id="cmFontUp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V5M7.5 9.5L12 5l4.5 4.5M5 19h14"/></svg><span>UPLOAD FONTS</span></button>
           <button type="button" class="cm-upload cm-txadd" id="cmTxAdd"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span id="cmTxAddT">ADD TEXT TO LIST</span></button>
@@ -2507,7 +2511,7 @@ html body #info_custom .cm-step input{appearance:none;width:58px;height:38px;bor
   function ease(t){return 1-Math.pow(1-t,3)}
   function drawP(p,k,dir){ if(p.view!==v) return; var z=zoneOf(v,p.zone), im=itemById(p.img); if(!z||!im) return; var e=ease(k), f=dir>0?e:1-e, sc=.82+.18*f;
     if(im.kind==='txt'){
-      var sz=Math.min(z.h*.9,260), t=im.text; vctx.font=fontCss(im,sz); var w=vctx.measureText(t).width; if(w>z.w*.96){ sz=Math.max(8,sz*z.w*.96/w); } sz=Math.max(6,sz*(im.len||100)/100);
+      var sz=Math.min(z.h*.9,260), t=im.text; vctx.font=fontCss(im,sz); var w=vctx.measureText(t).width; if(w>z.w*.96){ sz=Math.max(8,sz*z.w*.96/w); }
       vctx.save(); vctx.translate(z.x,z.y); vctx.scale(sc,sc); vctx.globalAlpha=f; vctx.font=fontCss(im,sz); vctx.textAlign='center'; vctx.textBaseline='middle'; vctx.fillStyle=im.color||(lum()<.55?'#fff':'#000'); vctx.fillText(t,0,sz*.04); vctx.restore(); return }
     var ar=im.el.naturalWidth/im.el.naturalHeight, w2=ar>=1?z.s:z.s*ar, h2=ar>=1?z.s/ar:z.s; w2*=sc; h2*=sc; vctx.globalAlpha=f; vctx.drawImage(im.el,z.x-w2/2,z.y-h2/2,w2,h2); vctx.globalAlpha=1 }
   function show(){vctx.clearRect(0,0,N,N);vctx.drawImage(v?offB:offF,0,0);
@@ -2545,7 +2549,7 @@ html body #info_custom .cm-step input{appearance:none;width:58px;height:38px;bor
   function drawZones(){
     stage.style.setProperty('--rc',lum()<.55?'#fff':'#000');
     zonesEl.innerHTML=''; if(!ready||sel<0) return;
-    var g=geo(); curZones().forEach(function(z){ var p=toStage(g,z.x,z.y), d=document.createElement('i'); if(isTouch()) d.className='zd'; d.style.left=p[0]+'px'; d.style.top=p[1]+'px'; zonesEl.appendChild(d) });
+    var g=geo(); curZones().forEach(function(z){ if(isTouch()&&placed.some(function(q){return q.view===v&&q.zone===z.id})) return; var p=toStage(g,z.x,z.y), d=document.createElement('i'); if(isTouch()) d.className='zd'; d.style.left=p[0]+'px'; d.style.top=p[1]+'px'; zonesEl.appendChild(d) });
   }
   function refreshUI(){
     var nImg=imgs.filter(function(a){return a.kind==='img'}).length, nTxt=imgs.length-nImg;
@@ -2611,7 +2615,7 @@ html body #info_custom .cm-step input{appearance:none;width:58px;height:38px;bor
   stage.addEventListener('pointerup',function(e){
     if(!tapAt||!(e.pointerType==='touch'||isTouch())){ tapAt=null; return }
     var d=Math.abs(e.clientX-tapAt.x)+Math.abs(e.clientY-tapAt.y); tapAt=null; if(d>14||!ready||e.target.closest('.cm-arrow,.cm-rm')) return;
-    if(sel>=0){ var z=zoneAt(e); if(z) placeAt(z) } else showRm(e)
+    if(sel>=0){ var z=zoneAt(e); if(z){ var wasTxt=imgs[sel].kind==='txt'; placeAt(z); if(wasTxt&&placed.some(function(q){return q.view===v&&q.zone===z.id})){ sel=-1; refreshUI(); show() } } } else showRm(e)
   });
   var endHold=function(){ clearTimeout(holdT); holdT=0; radar.classList.remove('hold') };
   stage.addEventListener('pointerup',endHold); stage.addEventListener('pointercancel',endHold);
@@ -2657,19 +2661,17 @@ html body #info_custom .cm-step input{appearance:none;width:58px;height:38px;bor
   });
   function addText(){
     var t=txIn.value.replace(/\s+/g,' ').trim(); if(!t) return;
-    var a={id:++uid,kind:'txt',text:t,family:fsel.family,fname:fsel.name,name:t,color:tset.color,len:tset.len}; imgs.push(a); sel=imgs.length-1; txIn.value='';
+    var a={id:++uid,kind:'txt',text:t,family:fsel.family,fname:fsel.name,name:t,color:tset.color}; imgs.push(a); sel=imgs.length-1; txIn.value='';
     fontReady(fsel).then(function(){ if(ready) show(); refreshUI() }); refreshUI(); toStageView();
   }
-  var tset={color:null,len:100}, txCols=$('cmTxCols'), txColName=$('cmTxColName'), lenIn=$('cmLen');
-  COLORS.forEach(function(c,i){ var b=document.createElement('button'); b.type='button'; b.className='cm-dot'; b.style.setProperty('--c',c[1]); b.setAttribute('aria-label',c[0]); b.title=c[0]; b.dataset.i=i; txCols.appendChild(b) });
+  var tset={color:null}, txCols=$('cmTxCols'), txColName=$('cmTxColName');
+  function swRow(i,name,col){ var b=document.createElement('button'); b.type='button'; b.className='cm-fo'; b.dataset.i=i; b.setAttribute('role','option'); b.innerHTML='<i class="cm-sw'+(i<0?' auto':'')+'"></i><span></span>'; if(col) b.firstChild.style.setProperty('--c',col); b.lastChild.textContent=name; return b }
+  txCols.appendChild(swRow(-1,'AUTO (MATCHES THE CLOTHES)')); COLORS.forEach(function(c,i){ txCols.appendChild(swRow(i,c[0],c[1])) });
   function curTx(){ var a=imgs[sel]; return a&&a.kind==='txt'?a:null }
   function syncTx(){ var s=curTx()||tset, idx=-1; COLORS.forEach(function(c,i){ if(s.color===c[1]) idx=i });
-    Array.prototype.forEach.call(txCols.children,function(d,i){ d.classList.toggle('on',i===idx) }); txColName.textContent=idx<0?'AUTO':COLORS[idx][0].toUpperCase(); lenIn.value=s.len }
-  function applyTx(){ var a=curTx(); if(a){ a.color=tset.color; a.len=tset.len; if(ready) show() } }
-  txCols.addEventListener('click',function(e){ var d=e.target.closest('.cm-dot'); if(!d) return; var col=COLORS[+d.dataset.i][1]; var cur=(curTx()||tset).color; tset.color=cur===col?null:col; applyTx(); syncTx() });
-  function setLen(n){ n=Math.max(20,Math.min(100,Math.round(n/5)*5)); tset.len=n; applyTx(); syncTx() }
-  $('cmLenM').addEventListener('click',function(){ setLen((curTx()||tset).len-10) }); $('cmLenP').addEventListener('click',function(){ setLen((curTx()||tset).len+10) });
-  lenIn.addEventListener('change',function(){ var n=parseInt(lenIn.value,10); setLen(isNaN(n)?100:n) });
+    Array.prototype.forEach.call(txCols.children,function(d){ d.classList.toggle('on',+d.dataset.i===idx) }); txColName.textContent=idx<0?'AUTO':COLORS[idx][0].toUpperCase() }
+  function applyTx(){ var a=curTx(); if(a){ a.color=tset.color; if(ready) show() } }
+  txCols.addEventListener('click',function(e){ var d=e.target.closest('.cm-fo'); if(!d) return; var i=+d.dataset.i; tset.color=i<0?null:COLORS[i][1]; applyTx(); syncTx() });
   txAdd.addEventListener('click',addText); txIn.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); addText() } });
   refreshUI();
 })();
